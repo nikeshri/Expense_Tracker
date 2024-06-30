@@ -8,6 +8,8 @@ import org.example.expensestracker.repo.DailyRepo;
 import org.example.expensestracker.service.ExpenseService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,10 +28,8 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public List<DailyExpenseDto> getAllExpenses() {
-        return dailyRepo.findAll().stream()
-                .map(dailyExpenseMapper::toDto)
-                .collect(Collectors.toList());
+    public List<DailyExpense> getAllExpenses() {
+        return dailyRepo.findAll();
     }
 
     @Override
@@ -56,5 +56,11 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         DailyExpense updatedExpense = dailyRepo.save(existingExpense);
         return dailyExpenseMapper.toDto(updatedExpense);
+    }
+
+    @Override
+    public List<DailyExpense> getAllExpenseByDate(Date date)
+    {
+       return dailyRepo.getDailyExpenseByDate(date);
     }
 }

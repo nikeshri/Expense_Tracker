@@ -1,21 +1,25 @@
 package org.example.expensestracker.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.example.expensestracker.dto.DailyExpenseDto;
+import org.example.expensestracker.model.DailyExpense;
 import org.example.expensestracker.service.ExpenseService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
+@CrossOrigin
 @RequestMapping("/api/expenses")
-public class    DailyExpenseController {
+public class DailyExpenseController {
 
-    @Autowired
-    private ExpenseService expenseService;
+    private final ExpenseService expenseService;
 
     @PostMapping
     public ResponseEntity<DailyExpenseDto> addExpense(@Validated @RequestBody DailyExpenseDto dailyExpenseDto) {
@@ -24,8 +28,8 @@ public class    DailyExpenseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DailyExpenseDto>> getAllExpenses() {
-        List<DailyExpenseDto> expenses = expenseService.getAllExpenses();
+    public ResponseEntity<List<DailyExpense>> getAllExpenses() {
+        List<DailyExpense> expenses = expenseService.getAllExpenses();
         return new ResponseEntity<>(expenses, HttpStatus.OK);
     }
 
@@ -46,4 +50,15 @@ public class    DailyExpenseController {
         expenseService.deleteExpense(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/date")
+    public ResponseEntity<List<DailyExpense>> getAllDataByDate(@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
+        List<DailyExpense> dailyExpenses = expenseService.getAllExpenseByDate(date);
+        if (dailyExpenses != null && !dailyExpenses.isEmpty()) {
+            return ResponseEntity.ok(dailyExpenses);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
